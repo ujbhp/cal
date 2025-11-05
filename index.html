@@ -688,6 +688,7 @@ header.top-banner {
   font-weight: 600;
 }
 
+.top-banner img { cursor: pointer; }
 
 </style>
 </head>
@@ -990,7 +991,14 @@ function handleUser(text) {
   }
 
   sayME(text);
-  const intent = intentFrom(text);
+
+// ✅ 사용자가 선택지를 눌렀을 때 살짝만 아래로 스크롤
+setTimeout(() => {
+  chat.scrollBy({ top: 500, behavior: "smooth" }); 
+}, 50);
+
+const intent = intentFrom(text);
+
 
   // ✅ “전부 보여주세요” 클릭 시: 달력 + 다이어리 전체 표시
   if (/전부\s*보여주세요/.test(text)) {
@@ -1500,6 +1508,21 @@ function showStandbyScreen() {
 
 // ✅ 대화 시작 시 타이머 초기화
 resetIdleTimer();
+document.querySelector('.top-banner img').style.cursor = 'pointer';
+document.querySelector('.top-banner img').addEventListener('click', () => {
+  // 대화창 리셋
+  chat.innerHTML = '';
+  quick.innerHTML = '';
+
+  // 입력 비활성 상태 해제
+  disableComposer(false);
+
+  // 대화 인트로 다시 시작
+  intro();
+
+  // 스크롤 맨 위로
+  chat.scrollTop = 0;
+});
 
 </script>
 
