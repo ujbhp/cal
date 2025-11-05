@@ -23,7 +23,6 @@ header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(6px);
 .logo{font-weight:800;font-size:18px}
 .chip{background:#eef2ff;color:#3730a3;padding:4px 10px;border-radius:999px;font-size:12px}
 
-main{display:grid;grid-template-columns:1fr;gap:16px;padding:16px}
 @media(min-width:900px){ 
   main{
     grid-template-columns: 1fr 180px; /* ✅ 오른쪽 폭 절반으로 */
@@ -645,6 +644,50 @@ main {
     font-size: 16px;
   }
 }
+/* 이미지만 살짝 확대 */
+.card:hover .thumb img {
+  transform: scale(1.03);
+}
+
+/* 배지는 항상 고정 (부드럽게 보이기만) */
+.badge {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+.thumb-wrap {
+  position: relative; /* 혹시 몰라 재확인 */
+}
+
+.thumb img {
+  position: relative;
+  z-index: 1; /* 이미지가 아래 */
+}
+
+.badge {
+  position: absolute;
+  z-index: 3; /* ✅ 배지가 이미지보다 위로 올라옴 */
+}
+header.top-banner {
+  margin-top: 18px; /* 원하는 만큼 조절 (추천 12~28px) */
+}
+/* 우측 선택지 버튼 간격 줄이기 */
+.rail .choices {
+  gap: 9px !important;     /* 기존 10px → 4px */
+}
+
+/* pill 버튼 높이 줄여서 전체 세로 공간 확보 */
+.rail .pill {
+  padding: 6px 10px !important;  /* 기존 8x12 → 조금 더 컴팩트 */
+  font-size: 13px;               /* 가독성 유지하면서 작게 */
+  border-radius: 999px;
+}
+.rail .subhead {
+  margin: 6px 0 4px !important; /* 기존 10px+ → 조금 더 컴팩트 */
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
 
 </style>
 </head>
@@ -690,15 +733,11 @@ main {
 
   <!-- 오른쪽 선택지 rail -->
   <aside class="rail">
-    <div class="box">
-      <h3>빠른 시작</h3>
-      <div class="choices" id="starts"></div>
-    </div>
-    <div class="box">
-      <h3>대화 선택지</h3>
-      <div class="choices" id="filters"></div>
-    </div>
-  </aside>
+  <div class="box">
+    <div class="choices" id="filters"></div>
+  </div>
+</aside>
+
 </main>
 <!-- Popup -->
 <div id="popupOverlay">
@@ -761,7 +800,7 @@ const CATALOG = [
 /* ---------- Presets ---------- */
 const STARTS = [
   { t:"달력 찾기", q:"달력이 필요해요" },
-  { t:"다이어리 찾기", q:"다이어리 보고싶어요" }
+  { t:"다이어리 찾기", q:"다이어리 볼래요" }
 ];
 const FILTERS = ["탁상","벽걸이","일력","위클리","데일리","미니","피너츠","고양이","명화","NASA","한국화","리곡","앨리스","올리브"];
 
@@ -942,7 +981,7 @@ function handleUser(text) {
     `).then(() => {
       renderMeChoices([
         '달력이 필요해요',
-        '다이어리 보고싶어요',
+        '다이어리 볼래요',
         '전부 보여주세요'
       ]);
       disableComposer(false);
@@ -1060,8 +1099,8 @@ function handleUser(text) {
       return;
     }
 
-    // ✅ “다이어리 보고싶어요” 클릭 시
-    if (/다이어리 보/.test(text)) {
+    // ✅ “다이어리 볼래요” 클릭 시
+    if (/다이어리 볼/.test(text)) {
       sayAI('좋아요 ✨ 다양한 다이어리를 먼저 보여드릴게요.').then(() => {
         const allDiaries = filterProducts({ kind: 'diary' });
         showProducts(allDiaries);
@@ -1099,7 +1138,7 @@ function handleUser(text) {
 
   // ✅ 기본 응답 (달력/다이어리 외)
   sayAI('좋아요 😊 어떤 상품을 보고 싶으신가요?').then(() => {
-    renderMeChoices(['달력이 필요해요', '다이어리 보고싶어요', '전부 보여주세요']);
+    renderMeChoices(['달력이 필요해요', '다이어리 볼래요', '전부 보여주세요']);
     disableComposer(false);
   });
 }
@@ -1109,11 +1148,7 @@ function disableComposer(dis){
 
 /* ---------- Rail populate & Intro ---------- */
 function populateRail() {
-  // 빠른 시작 그대로
-  const s = document.getElementById('starts');
-  s.innerHTML = '';
-  STARTS.forEach(x => addPill(s, x.q));
-
+ 
   // 대화 선택지 그룹 렌더
   const f = document.getElementById('filters');
   f.innerHTML = '';
@@ -1184,11 +1219,11 @@ function intro() {
   .then(() => sayAI(greet))
   .then(() => {
     renderMeChoices([
-      '📢 이벤트가 궁금해요',
-      '달력이 필요해요',
-      '다이어리 보고싶어요',
-      '전부 보여주세요'
-    ]);
+  '📢 이벤트가 궁금해요',
+  '달력이 필요해요',
+  '다이어리 볼래요',
+  '전부 보여주세요'
+]);
   });
 
 }
